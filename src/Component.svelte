@@ -265,6 +265,9 @@
 
   //Deletes a file (object in the files array) given its index. Used as a callback for the delete button.
   let deleteButtonClick = (index) => {
+    if(disabled) {
+      return
+    }
     // Remove the file from the files array.
     files = [...files.slice(0, index), ...files.slice(index + 1)];
     
@@ -364,21 +367,23 @@
       {label || " "}
     </label>
     <div class="spectrum-Form-itemField">
-      <input
-        type="file"
-        id={buttonID}
-        style="display: none;"
-        multiple
-        accept={acceptedFiles}
-        bind:files={browseFiles}
-      />
-      <input
-        type="button"
-        value="Browse..."
-        class="browse-button"
-        onclick="document.getElementById('{buttonID}').click();"
-        disabled={fieldState.disabled}
-      />
+      {#if !disabled}
+         <input
+           type="file"
+           id={buttonID}
+           style="display: none;"
+           multiple
+           accept={acceptedFiles}
+           bind:files={browseFiles}
+         />
+         <input
+           type="button"
+           value="Browse..."
+           class="browse-button"
+           onclick="document.getElementById('{buttonID}').click();"
+           disabled={fieldState.disabled}
+         />
+      {/if}
       {#if selectedFile}
         <div class="gallery">
           <div class="title">
@@ -387,7 +392,7 @@
                 class="spectrum-Link"
                 on:click={() => onLinkClick(selectedFileIdx)}
               >
-                {selectedFile.name}
+                {selectedFile.name} {disabled ? "yes" : "no"}
             </button>
             </div>
             <div class="options">
@@ -398,12 +403,12 @@
                   {`${(selectedFile.size / 1000000).toFixed(1)} MB`}
                 {/if}
               </div>
+              
               <div 
-                class="delete-button" 
+                class={`delete-button${disabled ? " disabled" : ""}`}
                 on:click={() => deleteButtonClick(selectedFileIdx)}
               >
-                <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 18 18" width="18"><defs><style>.fill {fill: #464646;}</style></defs><title>S Delete 18 N</title><rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" /><path class="fill" d="M15.75,3H12V2a1,1,0,0,0-1-1H6A1,1,0,0,0,5,2V3H1.25A.25.25,0,0,0,1,3.25v.5A.25.25,0,0,0,1.25,4h1L3.4565,16.55a.5.5,0,0,0,.5.45H13.046a.5.5,0,0,0,.5-.45L14.75,4h1A.25.25,0,0,0,16,3.75v-.5A.25.25,0,0,0,15.75,3ZM5.5325,14.5a.5.5,0,0,1-.53245-.46529L5,14.034l-.5355-8a.50112.50112,0,0,1,1-.067l.5355,8a.5.5,0,0,1-.46486.53283ZM9,14a.5.5,0,0,1-1,0V6A.5.5,0,0,1,9,6ZM11,3H6V2h5Zm1,11.034a.50112.50112,0,0,1-1-.067l.5355-8a.50112.50112,0,1,1,1,.067Z" />
-                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 18 18" width="18"><defs><style>.fill {fill: #464646;}.delete-button:hover .fill {fill: red;}</style></defs><title>S Delete 18 N</title><rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" /><path class="fill" d="M15.75,3H12V2a1,1,0,0,0-1-1H6A1,1,0,0,0,5,2V3H1.25A.25.25,0,0,0,1,3.25v.5A.25.25,0,0,0,1.25,4h1L3.4565,16.55a.5.5,0,0,0,.5.45H13.046a.5.5,0,0,0,.5-.45L14.75,4h1A.25.25,0,0,0,16,3.75v-.5A.25.25,0,0,0,15.75,3ZM5.5325,14.5a.5.5,0,0,1-.53245-.46529L5,14.034l-.5355-8a.50112.50112,0,0,1,1-.067l.5355,8a.5.5,0,0,1-.46486.53283ZM9,14a.5.5,0,0,1-1,0V6A.5.5,0,0,1,9,6ZM11,3H6V2h5Zm1,11.034a.50112.50112,0,0,1-1-.067l.5355-8a.50112.50112,0,1,1,1,.067Z" /></svg>
               </div>
             </div>
           </div>
@@ -422,14 +427,14 @@
             class:visible={selectedFileIdx > 0}
             on:click={navigateLeft}
           >
-          <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 18 18" width="18"><defs><style>.fill {fill: #464646;}</style></defs><title>S ChevronLeft 18 N</title><rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" /><path class="fill" d="M6,9a.994.994,0,0,0,.2925.7045l3.9915,3.99a1,1,0,1,0,1.4355-1.386l-.0245-.0245L8.4095,9l3.286-3.285A1,1,0,0,0,10.309,4.28l-.0245.0245L6.293,8.2945A.994.994,0,0,0,6,9Z" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 18 18" width="18"><defs><style>.fill {fill: #464646;}</style></defs><title>S ChevronLeft 18 N</title><rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" /><path class="fill" d="M6,9a.994.994,0,0,0,.2925.7045l3.9915,3.99a1,1,0,1,0,1.4355-1.386l-.0245-.0245L8.4095,9l3.286-3.285A1,1,0,0,0,10.309,4.28l-.0245.0245L6.293,8.2945A.994.994,0,0,0,6,9Z" /></svg>
           </div>
           <div
             class="nav right"
             class:visible={selectedFileIdx < fileCount - 1}
             on:click={navigateRight}
           >
-          <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 18 18" width="18"><defs><style>.fill {fill: #464646;}</style></defs><title>S ChevronRight 18 N</title><rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" /><path class="fill" d="M12,9a.994.994,0,0,1-.2925.7045l-3.9915,3.99a1,1,0,1,1-1.4355-1.386l.0245-.0245L9.5905,9,6.3045,5.715A1,1,0,0,1,7.691,4.28l.0245.0245,3.9915,3.99A.994.994,0,0,1,12,9Z" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="18" viewBox="0 0 18 18" width="18"><defs><style>.fill {fill: #464646;}</style></defs><title>S ChevronRight 18 N</title><rect id="Canvas" fill="#ff13dc" opacity="0" width="18" height="18" /><path class="fill" d="M12,9a.994.994,0,0,1-.2925.7045l-3.9915,3.99a1,1,0,1,1-1.4355-1.386l.0245-.0245L9.5905,9,6.3045,5.715A1,1,0,0,1,7.691,4.28l.0245.0245,3.9915,3.99A.994.994,0,0,1,12,9Z" /></svg>
           </div>
           <div class="footer">File {selectedFileIdx + 1} of {fileCount}</div>
         </div>
@@ -538,10 +543,10 @@
     transition: all 0.3s;
     margin-left: 10px;
     display: flex;
-  }
-  .delete-button:hover {
     cursor: pointer;
-    color: var(--red);
+  }
+  .delete-button.disabled {
+    cursor: not-allowed;
   }
 
   .nav {
